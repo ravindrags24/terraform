@@ -1,0 +1,87 @@
+### Default encryption for the bucket.
+
+{
+   “Version”: “2012-10-17",
+   “Statement”: [
+       {
+           “Sid”: “DenyIncorrectEncryptionHeader”,
+           “Effect”: “Deny”,
+           “Principal”: “*”,
+           “Action”: “s3:PutObject”,
+           “Resource”: “arn:aws:s3:::pro-test123/*“,
+           “Condition”: {
+               “StringNotEquals”: {
+                   “s3:x-amz-server-side-encryption”: “AES256"
+               }
+           }
+       },
+       {
+           “Sid”: “DenyUnEncryptedObjectUploads”,
+           “Effect”: “Deny”,
+           “Principal”: “*”,
+           “Action”: “s3:PutObject”,
+           “Resource”: “arn:aws:s3:::pro-test123/*“,
+           “Condition”: {
+               “Null”: {
+                   “s3:x-amz-server-side-encryption”: “true”
+               }
+           }
+       },
+
+       ######   User permission to update bucket policy other than `user1` and `root` no one can change bucket permission. ##########
+
+       {
+           “Sid”: “UpdateBucketPermissions”,
+           “Effect”: “Deny”,
+           “NotPrincipal”: {
+               “AWS”: [
+                   “arn:aws:iam::121212121212:user/user1”,
+                   “arn:aws:iam::121212121212:root”
+               ]
+           },
+           “Action”: “s3:PutBucketPolicy”,
+           “Resource”: “arn:aws:s3:::pro-test123"
+       },
+
+
+       ####### Permission to `PUT` and `DELETE` object from `user1`, `root` and `assumed-role` no one has access. ##############
+
+       {
+           “Sid”: “WritePermissions”,
+           “Effect”: “Deny”,
+           “NotPrincipal”: {
+               “AWS”: [
+                   “arn:aws:sts::121212121212:assumed-role/role1/i-xyabde43”,
+                   “arn:aws:iam::121212121212:user/user1",
+                   “arn:aws:iam::121212121212:root”
+               ]
+           },
+           “Action”: [
+               “s3:PutObject”,
+               “s3:DeleteObject”
+           ],
+           “Resource”: “arn:aws:s3:::pro-test123/*”
+       },
+
+       ####### Permission to `GET` object download from specific foler to `user1` , `root` and `assumed-role`.
+
+       {
+           “Sid”: “ReadPermissions”,
+           “Effect”: “Deny”,
+           “NotPrincipal”: {
+               “AWS”: [
+                   “arn:aws:iam::121212121212:user/user1”,
+                   “arn:aws:sts::121212121212:assumed-role/role1/i-xyabde43",
+                   “arn:aws:iam::121212121212:root”
+               ]
+           },
+           “Action”: “s3:GetObject”,
+           “Resource”: [
+               “arn:aws:s3:::pro-test123/xyaxav/*“,
+               “arn:aws:s3:::pro-test123/aabbccdd/*“,
+               “arn:aws:s3:::pro-test123/12345/*“,
+               “arn:aws:s3:::pro-test123/xyxyxy/*”
+           ]
+       }
+   ]
+}
