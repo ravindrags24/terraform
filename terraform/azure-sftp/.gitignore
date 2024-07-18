@@ -3,3 +3,4 @@ terraform*
 .terraform*
 main.destroy.tfplan
 .terraform.lock.hcl
+main.tfplan
