@@ -1,4 +1,5 @@
 *.terraform
 terraform*
 .terraform*
-*.tfplan
+main.destroy.tfplan
+.terraform.lock.hcl
